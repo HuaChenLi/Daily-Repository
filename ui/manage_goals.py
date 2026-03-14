@@ -165,6 +165,21 @@ class CategoryDialog(QDialog):
         
         self.setLayout(layout)
         self.text_input.setFocus()
+        
+        # Center dialog on parent window
+        self.center_on_parent(parent)
+    
+    def center_on_parent(self, parent):
+        """Center dialog on parent window"""
+        if parent:
+            parent_geometry = parent.geometry()
+            dialog_width = self.width()
+            dialog_height = self.height()
+            
+            x = parent_geometry.x() + (parent_geometry.width() - dialog_width) // 2
+            y = parent_geometry.y() + (parent_geometry.height() - dialog_height) // 2
+            
+            self.move(x, y)
     
     def get_name(self):
         return self.text_input.text().strip()
@@ -190,6 +205,21 @@ class GoalDialog(QDialog):
         
         self.setLayout(layout)
         self.text_input.setFocus()
+        
+        # Center dialog on parent window
+        self.center_on_parent(parent)
+    
+    def center_on_parent(self, parent):
+        """Center dialog on parent window"""
+        if parent:
+            parent_geometry = parent.geometry()
+            dialog_width = self.width()
+            dialog_height = self.height()
+            
+            x = parent_geometry.x() + (parent_geometry.width() - dialog_width) // 2
+            y = parent_geometry.y() + (parent_geometry.height() - dialog_height) // 2
+            
+            self.move(x, y)
     
     def get_name(self):
         return self.text_input.text().strip()
