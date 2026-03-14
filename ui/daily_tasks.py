@@ -20,7 +20,7 @@ class DailyTasksTab(QWidget):
         
         # Header with today's date
         header = QLabel(f"Tasks for {self.today}")
-        header_font = QFont("Segoe UI", 18, QFont.Bold)
+        header_font = QFont("Segoe UI", 12, QFont.Bold)
         header.setFont(header_font)
         layout.addWidget(header)
         
@@ -64,6 +64,7 @@ class DailyTasksTab(QWidget):
             if goals:
                 # Category group box
                 group = QGroupBox(cat_name)
+                group.setFont(QFont("Segoe UI", 10))
                 group_layout = QVBoxLayout()
                 
                 # Tasks in category
@@ -71,7 +72,7 @@ class DailyTasksTab(QWidget):
                     is_completed = self.db.is_goal_completed(goal_id, self.today)
                     
                     checkbox = QCheckBox(goal_name)
-                    checkbox.setFont(QFont("Segoe UI", 12))
+                    checkbox.setFont(QFont("Segoe UI", 9))
                     checkbox.setChecked(is_completed)
                     checkbox.stateChanged.connect(lambda state, gid=goal_id: self.on_task_toggle(gid))
                     

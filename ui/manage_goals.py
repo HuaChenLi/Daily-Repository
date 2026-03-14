@@ -36,7 +36,7 @@ class ManageGoalsTab(QWidget):
         cat_group_layout.addLayout(cat_btn_layout)
         
         self.category_list = QListWidget()
-        self.category_list.setFont(QFont("Segoe UI", 11))
+        self.category_list.setFont(QFont("Segoe UI", 9))
         self.category_list.itemSelectionChanged.connect(self.on_category_selected)
         cat_group_layout.addWidget(self.category_list)
         
@@ -54,7 +54,7 @@ class ManageGoalsTab(QWidget):
         goal_group_layout.addLayout(goal_btn_layout)
         
         self.goal_list = QListWidget()
-        self.goal_list.setFont(QFont("Segoe UI", 11))
+        self.goal_list.setFont(QFont("Segoe UI", 9))
         goal_group_layout.addWidget(self.goal_list)
         
         content_layout.addLayout(goal_group_layout)

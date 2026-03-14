@@ -54,28 +54,38 @@ class StatisticsTab(QWidget):
         total_goals = sum(stats['goal_count'] for stats in cat_stats.values())
         
         overall_group = QGroupBox("Overall Statistics")
+        overall_group.setFont(QFont("Segoe UI", 11))
         overall_layout = QVBoxLayout()
-        overall_layout.addWidget(QLabel(f"Total Goals: {total_goals}"))
-        overall_layout.addWidget(QLabel(f"Total Completion Days: {total_completions}"))
+        total_goals_label = QLabel(f"Total Goals: {total_goals}")
+        total_goals_label.setFont(QFont("Segoe UI", 9))
+        overall_layout.addWidget(total_goals_label)
+        total_days_label = QLabel(f"Total Completion Days: {total_completions}")
+        total_days_label.setFont(QFont("Segoe UI", 9))
+        overall_layout.addWidget(total_days_label)
         overall_group.setLayout(overall_layout)
         self.scroll_layout.addWidget(overall_group)
         
         # Category breakdown
         category_label = QLabel("By Category")
-        category_label.setFont(QFont("Segoe UI", 14, QFont.Bold))
+        category_label.setFont(QFont("Segoe UI", 12, QFont.Bold))
         self.scroll_layout.addWidget(category_label)
         
         for cat_name, stats in sorted(cat_stats.items()):
             cat_group = QGroupBox(cat_name)
+            cat_group.setFont(QFont("Segoe UI", 11))
             cat_layout = QVBoxLayout()
-            cat_layout.addWidget(QLabel(f"Goals: {stats['goal_count']}"))
-            cat_layout.addWidget(QLabel(f"Completion Days: {stats['total_days']}"))
+            goals_label = QLabel(f"Goals: {stats['goal_count']}")
+            goals_label.setFont(QFont("Segoe UI", 9))
+            cat_layout.addWidget(goals_label)
+            days_label = QLabel(f"Completion Days: {stats['total_days']}")
+            days_label.setFont(QFont("Segoe UI", 9))
+            cat_layout.addWidget(days_label)
             cat_group.setLayout(cat_layout)
             self.scroll_layout.addWidget(cat_group)
         
         # Goal tallies
         tally_label = QLabel("Goal Tallies")
-        tally_label.setFont(QFont("Segoe UI", 14, QFont.Bold))
+        tally_label.setFont(QFont("Segoe UI", 12, QFont.Bold))
         self.scroll_layout.addWidget(tally_label)
         
         goals = self.db.get_all_goals()
@@ -89,7 +99,7 @@ class StatisticsTab(QWidget):
             
             for goal_name, count in goal_tallies:
                 label = QLabel(f"{goal_name}: {count} days")
-                label.setFont(QFont("Segoe UI", 11))
+                label.setFont(QFont("Segoe UI", 9))
                 self.scroll_layout.addWidget(label)
         
         self.scroll_layout.addStretch()

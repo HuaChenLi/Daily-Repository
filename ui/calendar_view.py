@@ -25,7 +25,7 @@ class CalendarViewTab(QWidget):
         # Month navigation
         control_layout.addWidget(QPushButton("< Previous", clicked=self.prev_month))
         self.month_label = QLabel("")
-        self.month_label.setFont(QFont("Segoe UI", 14, QFont.Bold))
+        self.month_label.setFont(QFont("Segoe UI", 12, QFont.Bold))
         self.month_label.setMinimumWidth(200)
         control_layout.addWidget(self.month_label)
         control_layout.addWidget(QPushButton("Next >", clicked=self.next_month))
@@ -35,7 +35,7 @@ class CalendarViewTab(QWidget):
         control_layout.addSpacing(20)
         control_layout.addWidget(QLabel("Select Goal:"))
         self.goal_combo = QComboBox()
-        self.goal_combo.setFont(QFont("Segoe UI", 11))
+        self.goal_combo.setFont(QFont("Segoe UI", 9))
         self.goal_combo.setMinimumWidth(300)
         self.goal_combo.currentIndexChanged.connect(self.on_goal_selected)
         control_layout.addWidget(self.goal_combo)
@@ -125,7 +125,7 @@ class CalendarCanvas(QFrame):
             return
         
         painter = QPainter(self)
-        painter.setFont(QFont("Segoe UI", 12))
+        painter.setFont(QFont("Segoe UI", 9))
         
         width = self.width()
         height = self.height()
@@ -152,7 +152,7 @@ class CalendarCanvas(QFrame):
                            QBrush(QColor("#e0e0e0")))
             painter.drawRect(int(x), int(y), int(cell_width), int(cell_height))
             
-            painter.setFont(QFont("Segoe UI", 13, QFont.Bold))
+            painter.setFont(QFont("Segoe UI", 10, QFont.Bold))
             painter.drawText(int(x), int(y), int(cell_width), int(cell_height),
                            Qt.AlignCenter, weekday)
         
@@ -179,7 +179,7 @@ class CalendarCanvas(QFrame):
                 
                 if day != 0:
                     # Day number
-                    painter.setFont(QFont("Segoe UI", 16, QFont.Bold))
+                    painter.setFont(QFont("Segoe UI", 9, QFont.Bold))
                     painter.setPen(QPen(QColor("black")))
                     painter.drawText(int(x + 5), int(y + 5), int(cell_width - 10),
                                    int(cell_height - 10), Qt.AlignTop | Qt.AlignLeft, str(day))
@@ -187,7 +187,7 @@ class CalendarCanvas(QFrame):
                     # Checkmark if completed
                     date_str = f"{year:04d}-{month:02d}-{day:02d}"
                     if date_str in completed_dates:
-                        painter.setFont(QFont("Segoe UI", 20, QFont.Bold))
+                        painter.setFont(QFont("Segoe UI", 16, QFont.Bold))
                         painter.setPen(QPen(QColor("green")))
                         painter.drawText(int(x), int(y), int(cell_width), int(cell_height),
                                        Qt.AlignBottom | Qt.AlignRight, "✓")
