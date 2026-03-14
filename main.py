@@ -1,8 +1,6 @@
-import tkinter as tk
-from tkinter import ttk, messagebox
-from datetime import datetime, timedelta
-import sqlite3
+import sys
 import os
+from PyQt5.QtWidgets import QApplication
 from database import Database
 from ui.main_window import MainWindow
 
@@ -11,16 +9,14 @@ def main():
     db_path = os.path.join(os.path.dirname(__file__), 'achievements.db')
     db = Database(db_path)
     
-    # Create main window
-    root = tk.Tk()
-    root.title("Daily Achievements")
-    root.geometry("1000x700")
-    root.minsize(800, 600)
+    # Create PyQt5 application
+    app = QApplication(sys.argv)
     
-    # Initialize main window UI
-    app = MainWindow(root, db)
+    # Create and show main window
+    window = MainWindow(db)
+    window.show()
     
-    root.mainloop()
+    sys.exit(app.exec_())
 
 if __name__ == "__main__":
     main()

@@ -1,62 +1,60 @@
-import tkinter as tk
-from tkinter import ttk
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox,
+                             QCheckBox, QScrollArea)
+from PyQt5.QtCore import Qt, QDate
+from PyQt5.QtGui import QFont
 from datetime import datetime
 
-class DailyTasksFrame(ttk.Frame):
-    def __init__(self, parent, db):
-        super().__init__(parent)
+class DailyTasksTab(QWidget):
+    def __init__(self, db, refresh_callback):
+        super().__init__()
         self.db = db
+        self.refresh_callback = refresh_callback
         self.today = datetime.now().strftime('%Y-%m-%d')
-        self.task_vars = {}  # goal_id -> BooleanVar mapping
-        self.checkboxes = {}  # goal_id -> checkbox widget mapping
+        self.task_checkboxes = {}  # goal_id -> checkbox mapping
         
-        self.setup_ui()
+        self.init_ui()
     
-    def setup_ui(self):
-        """Setup the UI for daily tasks"""
-        # Header
-        header_frame = ttk.Frame(self)
-        header_frame.pack(fill=tk.X, padx=10, pady=10)
+    def init_ui(self):
+        """Initialize the UI"""
+        layout = QVBoxLayout()
         
-        ttk.Label(header_frame, text=f"Tasks for {self.today}", font=("Arial", 18, "bold")).pack(side=tk.LEFT)
+        # Header with today's date
+        header = QLabel(f"Tasks for {self.today}")
+        header_font = QFont("Segoe UI", 18, QFont.Bold)
+        header.setFont(header_font)
+        layout.addWidget(header)
         
-        # Main content area with scrollbar
-        canvas_frame = ttk.Frame(self)
-        canvas_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        # Scroll area for tasks
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll_widget = QWidget()
+        scroll_layout = QVBoxLayout(scroll_widget)
         
-        canvas = tk.Canvas(canvas_frame, bg="white")
-        scrollbar = ttk.Scrollbar(canvas_frame, orient=tk.VERTICAL, command=canvas.yview)
-        scrollable_frame = ttk.Frame(canvas)
+        self.tasks_layout = scroll_layout
+        self.tasks_container = scroll_widget
         
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-        )
+        scroll.setWidget(scroll_widget)
+        layout.addWidget(scroll)
         
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
-        
-        # Pack canvas and scrollbar
-        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        
-        self.scrollable_frame = scrollable_frame
+        self.setLayout(layout)
         self.refresh()
     
     def refresh(self):
         """Refresh the task list"""
-        # Clear existing widgets
-        for widget in self.scrollable_frame.winfo_children():
-            widget.destroy()
+        # Clear existing checkboxes
+        while self.tasks_layout.count():
+            item = self.tasks_layout.takeAt(0)
+            if item and item.widget():
+                item.widget().deleteLater()
         
-        self.task_vars.clear()
-        self.checkboxes.clear()
+        self.task_checkboxes.clear()
         
         # Get all goals grouped by category
         categories = self.db.get_categories()
         
         if not categories:
-            ttk.Label(self.scrollable_frame, text="No categories yet. Add one in 'Manage Goals' tab.").pack(padx=10, pady=10)
+            label = QLabel("No categories yet. Add one in 'Manage Goals' tab.")
+            self.tasks_layout.addWidget(label)
             return
         
         # Display tasks by category
@@ -64,30 +62,30 @@ class DailyTasksFrame(ttk.Frame):
             goals = self.db.get_goals_by_category(cat_id)
             
             if goals:
-                # Category header
-                cat_header = ttk.LabelFrame(self.scrollable_frame, text=cat_name, padding=10)
-                cat_header.pack(fill=tk.X, padx=10, pady=5)
+                # Category group box
+                group = QGroupBox(cat_name)
+                group_layout = QVBoxLayout()
                 
                 # Tasks in category
                 for goal_id, goal_name in goals:
                     is_completed = self.db.is_goal_completed(goal_id, self.today)
                     
-                    task_var = tk.BooleanVar(value=is_completed)
-                    self.task_vars[goal_id] = task_var
+                    checkbox = QCheckBox(goal_name)
+                    checkbox.setFont(QFont("Segoe UI", 12))
+                    checkbox.setChecked(is_completed)
+                    checkbox.stateChanged.connect(lambda state, gid=goal_id: self.on_task_toggle(gid))
                     
-                    # Create checkbox
-                    checkbox = ttk.Checkbutton(
-                        cat_header,
-                        text=goal_name,
-                        variable=task_var,
-                        command=lambda gid=goal_id: self.on_task_toggle(gid)
-                    )
-                    checkbox.pack(anchor=tk.W, padx=10, pady=3)
-                    self.checkboxes[goal_id] = checkbox
+                    group_layout.addWidget(checkbox)
+                    self.task_checkboxes[goal_id] = checkbox
+                
+                group.setLayout(group_layout)
+                self.tasks_layout.addWidget(group)
+        
+        self.tasks_layout.addStretch()
     
     def on_task_toggle(self, goal_id: int):
         """Handle task completion toggle"""
-        is_checked = self.task_vars[goal_id].get()
+        is_checked = self.task_checkboxes[goal_id].isChecked()
         
         if is_checked:
             self.db.mark_goal_complete(goal_id, self.today)

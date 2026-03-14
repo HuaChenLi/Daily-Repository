@@ -1,55 +1,58 @@
-import tkinter as tk
-from tkinter import ttk
-from .daily_tasks import DailyTasksFrame
-from .calendar_view import CalendarViewFrame
-from .statistics import StatisticsFrame
-from .manage_goals import ManageGoalsFrame
+from PyQt5.QtWidgets import (QMainWindow, QTabWidget, QVBoxLayout, QWidget)
+from PyQt5.QtCore import Qt
+from .daily_tasks import DailyTasksTab
+from .calendar_view import CalendarViewTab
+from .statistics import StatisticsTab
+from .manage_goals import ManageGoalsTab
 
-class MainWindow:
-    def __init__(self, root, db):
-        self.root = root
+class MainWindow(QMainWindow):
+    def __init__(self, db):
+        super().__init__()
         self.db = db
         
-        # Create main notebook (tabbed interface)
-        self.notebook = ttk.Notebook(root)
-        self.notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        self.setWindowTitle("Daily Achievements")
+        self.setGeometry(100, 100, 1200, 800)
+        self.setMinimumSize(900, 700)
         
-        # Tab 1: Daily Tasks
-        self.daily_frame = DailyTasksFrame(self.notebook, db)
-        self.notebook.add(self.daily_frame, text="Today's Tasks")
+        # Create central widget with tab interface
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        layout = QVBoxLayout(central_widget)
+        layout.setContentsMargins(0, 0, 0, 0)
         
-        # Tab 2: Calendar View
-        self.calendar_frame = CalendarViewFrame(self.notebook, db)
-        self.notebook.add(self.calendar_frame, text="Calendar")
+        # Create tab widget
+        self.tabs = QTabWidget()
+        layout.addWidget(self.tabs)
         
-        # Tab 3: Statistics
-        self.stats_frame = StatisticsFrame(self.notebook, db)
-        self.notebook.add(self.stats_frame, text="Statistics")
+        # Create tabs
+        self.daily_tab = DailyTasksTab(db, self.refresh_all)
+        self.calendar_tab = CalendarViewTab(db, self.refresh_all)
+        self.stats_tab = StatisticsTab(db, self.refresh_all)
+        self.manage_tab = ManageGoalsTab(db, self.refresh_all)
         
-        # Tab 4: Manage Goals
-        self.manage_frame = ManageGoalsFrame(self.notebook, db, self.refresh_all)
-        self.notebook.add(self.manage_frame, text="Manage Goals")
+        # Add tabs
+        self.tabs.addTab(self.daily_tab, "Today's Tasks")
+        self.tabs.addTab(self.calendar_tab, "Calendar")
+        self.tabs.addTab(self.stats_tab, "Statistics")
+        self.tabs.addTab(self.manage_tab, "Manage Goals")
         
-        # Bind tab change to refresh data
-        self.notebook.bind('<<NotebookTabChanged>>', self.on_tab_changed)
+        # Connect tab change signal
+        self.tabs.currentChanged.connect(self.on_tab_changed)
     
     def refresh_all(self):
         """Refresh all tabs"""
-        self.daily_frame.refresh()
-        self.calendar_frame.refresh()
-        self.stats_frame.refresh()
-        self.manage_frame.refresh()
+        self.daily_tab.refresh()
+        self.calendar_tab.refresh()
+        self.stats_tab.refresh()
+        self.manage_tab.refresh()
     
-    def on_tab_changed(self, event):
+    def on_tab_changed(self, index):
         """Refresh the current tab when switched to"""
-        current_tab = self.notebook.select()
-        tab_index = self.notebook.index(current_tab)
-        
-        if tab_index == 0:
-            self.daily_frame.refresh()
-        elif tab_index == 1:
-            self.calendar_frame.refresh()
-        elif tab_index == 2:
-            self.stats_frame.refresh()
-        elif tab_index == 3:
-            self.manage_frame.refresh()
+        if index == 0:
+            self.daily_tab.refresh()
+        elif index == 1:
+            self.calendar_tab.refresh()
+        elif index == 2:
+            self.stats_tab.refresh()
+        elif index == 3:
+            self.manage_tab.refresh()
