@@ -170,7 +170,7 @@ class CalendarCanvas(QFrame):
                 if day == 0:
                     painter.fillRect(int(x), int(y), int(cell_width), int(cell_height),
                                    QBrush(QColor("white")))
-                    painter.setPen(QPen(QColor("lightgray")))
+                    painter.setPen(QPen(QColor("gray")))
                 else:
                     date_str = f"{year:04d}-{month:02d}-{day:02d}"
                     is_completed = date_str in completed_dates
