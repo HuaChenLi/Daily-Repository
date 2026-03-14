@@ -60,6 +60,7 @@ class Database:
             )
             conn.commit()
             category_id = cursor.lastrowid
+            assert category_id is not None
             conn.close()
             return category_id
         except sqlite3.IntegrityError:
@@ -93,6 +94,7 @@ class Database:
         )
         conn.commit()
         goal_id = cursor.lastrowid
+        assert goal_id is not None
         conn.close()
         return goal_id
     

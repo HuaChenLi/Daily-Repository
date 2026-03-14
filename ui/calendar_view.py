@@ -23,13 +23,19 @@ class CalendarViewTab(QWidget):
         control_layout = QHBoxLayout()
         
         # Month navigation
-        control_layout.addWidget(QPushButton("< Previous", clicked=self.prev_month))
+        prev_btn = QPushButton("< Previous")
+        prev_btn.clicked.connect(self.prev_month)
+        control_layout.addWidget(prev_btn)
         self.month_label = QLabel("")
         self.month_label.setFont(QFont("Segoe UI", 12, QFont.Bold))
         self.month_label.setMinimumWidth(200)
         control_layout.addWidget(self.month_label)
-        control_layout.addWidget(QPushButton("Next >", clicked=self.next_month))
-        control_layout.addWidget(QPushButton("Today", clicked=self.today_month))
+        next_btn = QPushButton("Next >")
+        next_btn.clicked.connect(self.next_month)
+        control_layout.addWidget(next_btn)
+        today_btn = QPushButton("Today")
+        today_btn.clicked.connect(self.today_month)
+        control_layout.addWidget(today_btn)
         
         # Goal selector
         control_layout.addSpacing(20)

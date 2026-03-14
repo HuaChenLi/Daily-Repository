@@ -31,8 +31,12 @@ class ManageGoalsTab(QWidget):
         cat_group_layout.addWidget(cat_label)
         
         cat_btn_layout = QHBoxLayout()
-        cat_btn_layout.addWidget(QPushButton("+ Add", clicked=self.add_category))
-        cat_btn_layout.addWidget(QPushButton("- Delete", clicked=self.delete_category))
+        add_cat_btn = QPushButton("+ Add")
+        add_cat_btn.clicked.connect(self.add_category)
+        cat_btn_layout.addWidget(add_cat_btn)
+        del_cat_btn = QPushButton("- Delete")
+        del_cat_btn.clicked.connect(self.delete_category)
+        cat_btn_layout.addWidget(del_cat_btn)
         cat_group_layout.addLayout(cat_btn_layout)
         
         self.category_list = QListWidget()
@@ -49,8 +53,12 @@ class ManageGoalsTab(QWidget):
         goal_group_layout.addWidget(goal_label)
         
         goal_btn_layout = QHBoxLayout()
-        goal_btn_layout.addWidget(QPushButton("+ Add", clicked=self.add_goal))
-        goal_btn_layout.addWidget(QPushButton("- Delete", clicked=self.delete_goal))
+        add_goal_btn = QPushButton("+ Add")
+        add_goal_btn.clicked.connect(self.add_goal)
+        goal_btn_layout.addWidget(add_goal_btn)
+        del_goal_btn = QPushButton("- Delete")
+        del_goal_btn.clicked.connect(self.delete_goal)
+        goal_btn_layout.addWidget(del_goal_btn)
         goal_group_layout.addLayout(goal_btn_layout)
         
         self.goal_list = QListWidget()
@@ -159,8 +167,12 @@ class CategoryDialog(QDialog):
         
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
-        btn_layout.addWidget(QPushButton("Save", clicked=self.accept))
-        btn_layout.addWidget(QPushButton("Cancel", clicked=self.reject))
+        save_btn = QPushButton("Save")
+        save_btn.clicked.connect(self.accept)
+        btn_layout.addWidget(save_btn)
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.clicked.connect(self.reject)
+        btn_layout.addWidget(cancel_btn)
         layout.addLayout(btn_layout)
         
         self.setLayout(layout)
@@ -199,8 +211,12 @@ class GoalDialog(QDialog):
         
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
-        btn_layout.addWidget(QPushButton("Save", clicked=self.accept))
-        btn_layout.addWidget(QPushButton("Cancel", clicked=self.reject))
+        save_btn = QPushButton("Save")
+        save_btn.clicked.connect(self.accept)
+        btn_layout.addWidget(save_btn)
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.clicked.connect(self.reject)
+        btn_layout.addWidget(cancel_btn)
         layout.addLayout(btn_layout)
         
         self.setLayout(layout)

@@ -44,8 +44,10 @@ class DailyTasksTab(QWidget):
         # Clear existing checkboxes
         while self.tasks_layout.count():
             item = self.tasks_layout.takeAt(0)
-            if item and item.widget():
-                item.widget().deleteLater()
+            if item:
+                widget = item.widget()
+                if widget:
+                    widget.deleteLater()
         
         self.task_checkboxes.clear()
         

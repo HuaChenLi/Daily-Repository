@@ -38,8 +38,10 @@ class StatisticsTab(QWidget):
         # Clear existing widgets
         while self.scroll_layout.count():
             item = self.scroll_layout.takeAt(0)
-            if item and item.widget():
-                item.widget().deleteLater()
+            if item:
+                widget = item.widget()
+                if widget:
+                    widget.deleteLater()
         
         # Category statistics
         cat_stats = self.db.get_category_stats()
