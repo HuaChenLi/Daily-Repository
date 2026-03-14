@@ -1,10 +1,9 @@
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
                              QLabel, QComboBox, QFrame)
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QPainter, QColor, QBrush, QPen
+from PyQt5.QtGui import QFont, QPainter, QColor, QBrush, QPen, QMouseEvent
 from datetime import datetime, timedelta
 import calendar as cal
-
+from typing import Optional
 class CalendarViewTab(QWidget):
     def __init__(self, db, refresh_callback):
         super().__init__()
@@ -111,10 +110,10 @@ class CalendarViewTab(QWidget):
 
 
 class CalendarCanvas(QFrame):
-    def __init__(self, db, parent):
+    def __init__(self, db, parent: CalendarViewTab):
         super().__init__()
         self.db = db
-        self.parent = parent
+        self.calendar_view: CalendarViewTab = parent
         self.current_date = datetime.now()
         self.selected_goal = None
         self.setStyleSheet("background-color: white; border: 1px solid gray;")
@@ -125,7 +124,7 @@ class CalendarCanvas(QFrame):
         self.selected_goal = selected_goal
         self.update()
     
-    def paintEvent(self, event):
+    def paintEvent(self, a0):
         """Paint calendar"""
         if not self.selected_goal:
             return
@@ -160,7 +159,7 @@ class CalendarCanvas(QFrame):
             
             painter.setFont(QFont("Segoe UI", 10, QFont.Bold))
             painter.drawText(int(x), int(y), int(cell_width), int(cell_height),
-                           Qt.AlignCenter, weekday)
+                           0x84, weekday)
         
         # Draw calendar days
         for week_idx, week in enumerate(month_calendar):
@@ -188,7 +187,7 @@ class CalendarCanvas(QFrame):
                     painter.setFont(QFont("Segoe UI", 9, QFont.Bold))
                     painter.setPen(QPen(QColor("black")))
                     painter.drawText(int(x + 5), int(y + 5), int(cell_width - 10),
-                                   int(cell_height - 10), Qt.AlignTop | Qt.AlignLeft, str(day))
+                                   int(cell_height - 10), 0x20 | 0x1, str(day))
                     
                     # Checkmark if completed
                     date_str = f"{year:04d}-{month:02d}-{day:02d}"
@@ -196,11 +195,11 @@ class CalendarCanvas(QFrame):
                         painter.setFont(QFont("Segoe UI", 16, QFont.Bold))
                         painter.setPen(QPen(QColor("green")))
                         painter.drawText(int(x), int(y), int(cell_width), int(cell_height),
-                                       Qt.AlignBottom | Qt.AlignRight, "✓")
+                                       0x40 | 0x2, "✓")
     
-    def mouseDoubleClickEvent(self, event):
+    def mouseDoubleClickEvent(self, a0: Optional[QMouseEvent]):
         """Handle double-click to toggle completion"""
-        if not self.parent.selected_goal:
+        if a0 is None or not self.calendar_view.selected_goal:
             return
         
         width = self.width()
@@ -214,8 +213,8 @@ class CalendarCanvas(QFrame):
         cell_height = height / (len(month_calendar) + 1)
         
         # Figure out which cell was clicked
-        day_idx = int(event.x() / cell_width)
-        week_idx = int((event.y() - cell_height) / cell_height)
+        day_idx = int(a0.x() / cell_width)
+        week_idx = int((a0.y() - cell_height) / cell_height)
         
         # Bounds check
         if week_idx < 0 or week_idx >= len(month_calendar) or day_idx < 0 or day_idx >= 7:
@@ -230,11 +229,11 @@ class CalendarCanvas(QFrame):
         date_str = f"{year:04d}-{month:02d}-{day:02d}"
         
         # Toggle completion
-        is_completed = self.db.is_goal_completed(self.parent.selected_goal, date_str)
+        is_completed = self.db.is_goal_completed(self.calendar_view.selected_goal, date_str)
         
         if is_completed:
-            self.db.mark_goal_incomplete(self.parent.selected_goal, date_str)
+            self.db.mark_goal_incomplete(self.calendar_view.selected_goal, date_str)
         else:
-            self.db.mark_goal_complete(self.parent.selected_goal, date_str)
+            self.db.mark_goal_complete(self.calendar_view.selected_goal, date_str)
         
         self.update()
