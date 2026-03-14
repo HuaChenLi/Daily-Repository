@@ -4,6 +4,7 @@ from .daily_tasks import DailyTasksTab
 from .calendar_view import CalendarViewTab
 from .statistics import StatisticsTab
 from .manage_goals import ManageGoalsTab
+import base64
 
 class MainWindow(QMainWindow):
     def __init__(self, db):
@@ -13,6 +14,14 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Daily Achievements")
         self.setGeometry(100, 100, 1200, 800)
         self.setMinimumSize(900, 700)
+        
+        # Restore window geometry if saved
+        geometry = self.db.get_setting('window_geometry')
+        if geometry:
+            try:
+                self.restoreGeometry(base64.b64decode(geometry))
+            except:
+                pass  # If invalid, use default
         
         # Create central widget with tab interface
         central_widget = QWidget()
@@ -56,3 +65,9 @@ class MainWindow(QMainWindow):
             self.stats_tab.refresh()
         elif index == 3:
             self.manage_tab.refresh()
+    
+    def closeEvent(self, event):
+        """Save window geometry before closing"""
+        geometry = self.saveGeometry()
+        self.db.set_setting('window_geometry', base64.b64encode(geometry).decode('utf-8'))
+        event.accept()

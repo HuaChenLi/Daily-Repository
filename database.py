@@ -46,6 +46,14 @@ class Database:
             )
         ''')
         
+        # Settings table for application settings
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS settings (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            )
+        ''')
+        
         conn.commit()
         conn.close()
     
@@ -230,3 +238,23 @@ class Database:
         
         conn.close()
         return stats
+    
+    def set_setting(self, key: str, value: str):
+        """Set a setting value"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute(
+            'INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)',
+            (key, value)
+        )
+        conn.commit()
+        conn.close()
+    
+    def get_setting(self, key: str, default: str = '') -> str:
+        """Get a setting value"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute('SELECT value FROM settings WHERE key = ?', (key,))
+        result = cursor.fetchone()
+        conn.close()
+        return result[0] if result else default
